@@ -1,0 +1,51 @@
+services:
+  dogadoptionmicroservice:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    hostname: dogandlocationservice
+    ports:
+      - "8083:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    depends_on:
+      mysql-dogandlocation:
+        condition: service_healthy
+
+  mysql-dogandlocation:
+    image: mysql:5.7
+    ports:
+      - "3307:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=rootpwd
+      - MYSQL_DATABASE=dogandlocation-db
+      - MYSQL_USER=user
+      - MYSQL_PASSWORD=pwd
+    volumes:
+      - ./data/mysql-dogandlocation:/var/lib/mysql
+      - ./dogandlocation-service/data/init.d:/docker-entrypoint-initdb.d
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "mysqladmin",
+          "ping",
+          "-uuser",
+          "-ppwd",
+          "-h",
+          "localhost",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  phpmyadmin-dogandlocation:
+    image: phpmyadmin:5.2.0
+    container_name: PhpMyAdmin-dogandlocation
+    links:
+      - mysql-dogandlocation:db
+    restart: always
+    ports:
+      - 5013:80
+    environment:
+      - PMA_ARBITRARY=1

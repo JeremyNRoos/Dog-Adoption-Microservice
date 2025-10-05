@@ -1,0 +1,31 @@
+# Default Spring Profile
+server:
+  error:
+    include-message: always
+logging:
+  level:
+    root: INFO
+    com.roos: DEBUG
+
+---
+
+spring:
+  config:
+    activate:
+     on-profile: docker
+
+server.port: 8080
+
+app:
+  dogandlocation-service:
+    host: dogandlocation-service
+    port: 8080
+  volunteer-service:
+    host: volunteer-service
+    port: 8080
+  adopter-service:
+    host: adopter-service
+    port: 8080
+  adoptionpaper-service:
+    host: adoptionpaper-service
+    port: 8080

@@ -1,0 +1,4 @@
+package com.roos.adoptioncenter.adoptionpaper_service.utils.ExceptionsHandling;
+
+public class AdopterServiceException {
+}

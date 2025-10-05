@@ -1,0 +1,14 @@
+@startuml
+!includeurl https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/master/C4_Context.puml
+
+title System Context Diagram for Adoption Center
+
+Person(adopter, "Adopter", "customer of the dog adoption center")
+System(adoptionCenter, "Adoption Center System", "Allows volunteers to create and track records of dog adoptions")
+
+
+Rel(adopter, adoptionCenter, "Views dogs available for adoption", "Uses")
+
+
+'SHOW_LEGEND()
+@enduml

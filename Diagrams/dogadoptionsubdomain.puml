@@ -1,0 +1,350 @@
+    @startuml
+hide circle
+top to bottom direction
+scale 0.2
+!define ENTITY(entityName) class entityName << Entity >>
+!define ENUM(enumName) class enumName << Enum >>
+!define AGGREGATE(aggregateName) class aggregateName << Aggregate >>
+!define AGGREGATE_ROOT(aggregateRootName) class aggregateRootName << Aggregate Root >>
+!define AGGREGATE_ROOT_ENTITY(aggregateRootEntityName) class aggregateRootEntityName << Aggregate Root >> << Entity >>
+!define VALUE_OBJECT(valueObjectName) class valueObjectName << Value Object >>
+!pragma useVerticalIf on
+skinparam dpi 350
+skinparam packageStyle rectangle
+
+skinparam rectangle {
+    BackgroundColor #f7f4eb
+    BorderColor Black
+}
+
+rectangle "Dog adoption center Context" as DogAdoptionCenter #line.dashed {
+    Package "Dogs Subdomain" as Dogs <<Rectangle>> #LightGreen {
+    ENTITY(Location) #lightpink {
+                name: String
+                shelter: shelterType
+                address: locationAddress
+                capacity: int
+                availableSpace: int
+                kennel: Kennel
+            }
+
+            VALUE_OBJECT(locationAddress) #green {
+                streetAddress: String
+                city: String
+                province: String
+                country: String
+                postalCode: String
+            }
+
+            VALUE_OBJECT(Kennel) #green {
+                kennelId: UUID
+                size: kennelSizeEnum
+                occupancyStatus: occupancyStatusEnum
+            }
+
+            ENUM(kennelSizeEnum) #lightblue {
+                SMALL
+                MEDIUM
+                LARGE
+            }
+
+            ENUM(occupancyStatusEnum) #lightblue {
+                AVAILABLE
+                OCCUPIED
+            }
+
+            VALUE_OBJECT(LocationIdentifier) #green {
+                locationId: UUID
+            }
+
+            ENUM(shelterType) #lightblue{
+                SHELTER
+                FOSTERHOME
+                MEDICALUNIT
+            }
+
+
+            Location --> LocationIdentifier
+            Location --> shelterType
+            Location --> Kennel
+            Location --> locationAddress
+            Kennel --> occupancyStatusEnum
+            Kennel --> kennelSizeEnum
+        ENTITY(Dog) #lightPink {
+           name: String
+           breed: DogBreedEnum
+           age: int
+           vaccinationStatus: vaccinationStatusEnum
+           Availability: AvailabilityStatusEnum
+        }
+
+        VALUE_OBJECT(DogIdentifier) #green {
+            DogsId: UUID
+        }
+
+        ENUM(AvailabilityStatusEnum) #lightblue{
+        AVAILABLE
+        ADOPTED
+        }
+
+
+        ENUM(DogBreedEnum) #lightblue {
+            GERMAN_SHEPHERD
+            BULLDOG
+            LABRADOR_RETRIEVER
+            GOLDEN_RETRIEVER
+            SIBERIAN_HUSKY
+            POODLE
+            CHIHUAHUA
+            DACHSHUND
+            PUG
+            ROTTWEILER
+            BORDER_COLLIE
+            BOXER
+            MALTESE
+            BICHON_FRISÉ
+            AFGHAN_HOUND
+            CHOW_CHOW
+            POMERANIAN
+        }
+
+        ENUM(VaccinationStatusEnum) #lightblue {
+            VACCINATED
+            NOT_VACCINATED
+        }
+
+
+        Dog --> DogIdentifier
+        Dog --> DogBreedEnum
+        Dog --> VaccinationStatusEnum
+        Dog --> AvailabilityStatusEnum
+    }
+    Package "Adopters Subdomain" as Adopters <<Rectangle>> #LightGreen {
+        ENTITY(Adopter) #lightPink{
+        fName: String
+        lName: string
+        address: AdopterAddress
+        phoneNumber: AdopterPhoneNumber
+        ContactMethodPreference: ContactMethodPreference
+        }
+
+        VALUE_OBJECT(AdopterIdentifier) #green {
+        AdopterId: UUID
+        }
+
+        VALUE_OBJECT(AdopterPhoneNumber) #green{
+            type: PhoneTypeEnum
+            phoneNumber: String
+        }
+
+        ENUM(PhoneTypeEnum) #lightblue {
+            HOME
+            WORK
+            MOBILE
+        }
+
+        VALUE_OBJECT(AdopterAddress) #green {
+            streetAddress: String
+            city: String
+            province: String
+            country: String
+            postalCode: String
+        }
+
+        ENUM(ContactMethodPreference) #lightblue {
+            EMAIL
+            PHONE
+            TEXT
+        }
+
+        Adopter --> AdopterIdentifier
+        Adopter "1" -L-> "..*" AdopterPhoneNumber
+        Adopter "1" --> "..*" AdopterAddress
+        Adopter --> ContactMethodPreference
+
+        AdopterPhoneNumber --> PhoneTypeEnum
+    }
+
+
+
+
+
+    Package "Dog Rescue Subdomain" as DogRescueSubdomain <<Rectangle>> #grey {
+
+        ENTITY(DogRescue) #lightpink{
+            companyName: String
+            buisnessNumber: String
+
+
+        }
+    }
+
+    Package "Location Service Subdomain" as LocationService <<Rectangle>> #LightGreen {
+'        ENTITY(Location) #lightpink {
+'            name: String
+'            shelter: shelterType
+'            address: locationAddress
+'            capacity: int
+'            availableSpace: int
+'            kennel: Kennel
+'        }
+'
+'        VALUE_OBJECT(locationAddress) #green {
+'            streetAddress: String
+'            city: String
+'            province: String
+'            country: String
+'            postalCode: String
+'        }
+'
+'        VALUE_OBJECT(Kennel) #green {
+'            kennelId: UUID
+'            size: kennelSizeEnum
+'            occupancyStatus: occupancyStatusEnum
+'        }
+'
+'        ENUM(kennelSizeEnum) #lightblue {
+'            SMALL
+'            MEDIUM
+'            LARGE
+'        }
+'
+'        ENUM(occupancyStatusEnum) #lightblue {
+'            AVAILABLE
+'            OCCUPIED
+'        }
+'
+'        VALUE_OBJECT(LocationIdentifier) #green {
+'            locationId: UUID
+'        }
+'
+'        ENUM(shelterType) #lightblue{
+'            SHELTER
+'            FOSTERHOME
+'            MEDICALUNIT
+'        }
+'
+'
+'        Location --> LocationIdentifier
+'        Location --> shelterType
+'        Location --> Kennel
+'        Location --> locationAddress
+'        Kennel --> occupancyStatusEnum
+'        Kennel --> kennelSizeEnum
+    }
+        Package "Volunteer Subdomain" as Volunteer <<Rectangle>> #grey {
+            ENTITY(Volunteer) #lightpink {
+                        sin: String
+                        firstName: String
+                        lastName: String
+                        email: String
+                        salary: Decimal
+                        position: Position
+                  }
+
+                  VALUE_OBJECT(VolunteerIdentifier) #green{
+                        volunteerId: UUID
+                  }
+
+                  VALUE_OBJECT(VolunteerAddress) #green{
+                     streetNumber : String
+                     streetName: String
+                     city: String
+                     province: ProvinceEnum
+                     postalCode: String
+                     }
+
+                    VALUE_OBJECT(VolunteerPhoneNumber) #green{
+                        type: PhoneTypeEnum
+                        phoneNumber: String
+                    }
+
+                    ENUM(PhoneTypeEnum) #lightblue {
+                        HOME
+                        WORK
+                        MOBILE
+                    }
+                    VALUE_OBJECT(Position) #green {
+                        title: PositionTitleEnum
+                        positionCode: PositionCodeEnum
+                    }
+
+                    ENUM(PositionTitleEnum) #lightblue {
+                        MANAGER
+                        CLERK
+                        VET
+                    }
+                    ENUM(PositionCodeEnum) #lightblue {
+                        MG
+                        CL
+                        VT
+                    }
+
+                    Volunteer --> VolunteerIdentifier
+                    Volunteer --> VolunteerAddress
+                    Volunteer --> VolunteerPhoneNumber
+                    Volunteer --> Position
+
+                    VolunteerPhoneNumber --> PhoneTypeEnum
+
+                    Position --> PositionTitleEnum
+                    Position --> PositionCodeEnum
+        }
+        Package "Adoption Service Subdomain" as AdoptionService <<Rectangle>> #LightGreen {
+
+                note "Invariant: [When a Dog is adopted i.e. adoption.status is set to COMPLETED, its status in the dog must be set to ADOPTED]" as doginvariante1
+
+
+            AGGREGATE_ROOT(Adoption) #yellow{
+                dogName: String
+                dogBreed: DogBreedEnum
+                dogAge: int
+                vaccinationStatus: VaccinationStatusEnum
+                healthInsurance: healthInsuranceEnum
+                adopterFName: String
+                adopterLName: String
+                adopterAddress: String
+                phoneNumber: AdopterPhoneNumber
+                volunteerFName: string
+                volunteerLName: String
+                locationName: String
+
+            }
+
+            VALUE_OBJECT(AdoptionIdentifier) #green {
+                adoptionId: UUID
+            }
+
+            ENUM(healthInsuranceEnum) #lightblue {
+                NONE
+                ACCIDENTAL_PLAN
+                ACCIDENTAL_AND_ILLNESS_PLAN
+                WELLNESS_PLAN
+            }
+
+            ENUM(AdoptionStatusEnum) #lightblue {
+               PENDING
+               COMPLETED
+               CANCELLED
+            }
+
+            Adoption --> AdoptionIdentifier
+            Adoption --> healthInsuranceEnum
+            Adoption --> AdoptionStatusEnum
+            Adoption --> DogIdentifier
+            Adoption --> AdopterIdentifier
+            Adoption --> VolunteerIdentifier
+            Adoption --> LocationIdentifier
+        }
+
+
+}
+
+
+@enduml
+
+I want to have a dog adoption domain where a person can adopt them for free.
+I'll need a volunteer to run the place(because its not a buiness)
+and ill need a person who will adopt a dog.
+Then I will need an aggregate root where all information comes together.
+So I decide ill make an adoption paper where it holds all the information about all parties involved in the adoption.

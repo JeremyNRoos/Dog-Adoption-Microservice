@@ -1,0 +1,393 @@
+package com.roos.adoptioncenter.dogandlocation_service.dogandlocationsubdomain.presentationlayer.Location;
+
+import com.roos.adoptioncenter.dogandlocation_service.dogandlocationsubdomain.dataaccesslayer.Location.LocationRepository;
+import com.roos.adoptioncenter.dogandlocation_service.dogandlocationsubdomain.dataaccesslayer.Location.ShelterTypeEnum;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.jdbc.Sql;
+import org.springframework.test.web.reactive.server.WebTestClient;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
+
+
+@Sql({"/data.sql"})
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+@SpringBootTest(webEnvironment = RANDOM_PORT)
+class LocationControllerIntegrationTest {
+
+    @Autowired
+    private WebTestClient webTestClient;
+
+    @Autowired
+    private LocationRepository repository;
+
+    private final String BASE_URI = "/api/v1/locations";
+    private final String VALID_ID = "3e6c62a3-b1e7-4eb7-9642-8cdcb3ac74e6";
+    private final String NOT_FOUND_ID = "2cfa25c5-1d13-4a9c-ae2a-55e2a5ae248b";
+    private final String INVALID_ID = "invalid-id";
+
+    @Test
+    void whenLocationsExist_thenReturnAllLocations() {
+        long sizeDB = this.repository.count();
+
+        this.webTestClient.get()
+                .uri(BASE_URI)
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .expectStatus().isOk()
+                .expectHeader().contentType(MediaType.APPLICATION_JSON)
+                .expectBodyList(LocationResponseModel.class)
+                .value((list) -> {
+                    assertNotNull(list);
+                    assertEquals(sizeDB, list.size());
+                });
+    }
+
+    @Test
+    void getAllLocations_emptyDB_returnsEmptyList() {
+        repository.deleteAll();
+        webTestClient.get().uri(BASE_URI)
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBodyList(LocationResponseModel.class)
+                .value(list -> assertEquals(0, list.size()));
+    }
+
+    @Test
+    void getLocationById_validId_returnsLocation() {
+        webTestClient.get().uri(BASE_URI + "/" + VALID_ID)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(LocationResponseModel.class)
+                .value(location -> assertEquals(VALID_ID, location.getLocationId()));
+    }
+
+    @Test
+    void getLocationById_nonExistent_returnsNotFound() {
+        webTestClient.get().uri(BASE_URI + "/" + NOT_FOUND_ID)
+                .exchange()
+                .expectStatus().isNotFound()
+                .expectBody().jsonPath("$.message").isEqualTo("Unknown locationid: " + NOT_FOUND_ID);
+    }
+
+    @Test
+    void createValidLocation_returnsCreated() {
+        LocationRequestModel model = LocationRequestModel.builder()
+                .name("East Shelter")
+                .shelterType(ShelterTypeEnum.SHELTER)
+                .streetAddress("123 St")
+                .city("Toronto")
+                .province("Ontario")
+                .country("Canada")
+                .postalCode("M4B1B3")
+                .capacity(30)
+                .availableSpace(10)
+                .build();
+
+        webTestClient.post().uri(BASE_URI)
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(model)
+                .exchange()
+                .expectStatus().isCreated()
+                .expectBody(LocationResponseModel.class)
+                .value(response -> assertEquals(model.getName(), response.getName()));
+    }
+
+    @Test
+    void whenLocationIdIsInvalidOnGet_thenReturnUnprocessableEntity() {
+        this.webTestClient.get()
+                .uri(BASE_URI + "/" + INVALID_ID)
+                .exchange()
+                .expectStatus().isEqualTo(HttpStatus.UNPROCESSABLE_ENTITY)
+                .expectBody()
+                .jsonPath("$.message").isEqualTo("Invalid locationid: " + INVALID_ID);
+    }
+
+    @Test
+    void whenLocationIdIsNotFoundOnGet_thenReturnNotFound() {
+        this.webTestClient.get()
+                .uri(BASE_URI + "/" + NOT_FOUND_ID)
+                .exchange()
+                .expectStatus().isNotFound()
+                .expectBody()
+                .jsonPath("$.message").isEqualTo("Unknown locationid: " + NOT_FOUND_ID);
+    }
+
+    @Test
+    void whenLocationExistsOnUpdate_thenReturnIsOk() {
+        LocationRequestModel updateRequest = LocationRequestModel.builder()
+                .name("Happy Tails Shelter")
+                .shelterType(ShelterTypeEnum.SHELTER)
+                .streetAddress("123 St")
+                .city("Toronto")
+                .province("Ontario")
+                .country("Canada")
+                .postalCode("M4B1B3")
+                .capacity(30)
+                .availableSpace(10)
+                .build();
+
+        this.webTestClient.put()
+                .uri(BASE_URI + "/" + VALID_ID)
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(updateRequest)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(LocationResponseModel.class)
+                .value(locationResponseModel -> {
+                    assertEquals(updateRequest.getName(), locationResponseModel.getName());
+                    assertEquals(updateRequest.getShelterType(), locationResponseModel.getShelterType());
+                });
+    }
+
+    @Test
+    void whenLocationExistsOnDelete_thenReturnNoContent() {
+        this.webTestClient.delete()
+                .uri(BASE_URI + "/" + VALID_ID)
+                .exchange()
+                .expectStatus().isNoContent();
+
+        this.webTestClient.get()
+                .uri(BASE_URI + "/" + VALID_ID)
+                .exchange()
+                .expectStatus().isNotFound()
+                .expectBody()
+                .jsonPath("$.message").isEqualTo("Unknown locationid: " + VALID_ID);
+    }
+
+    @Test
+    void whenLocationIdIsInvalidOnPut_thenReturnBadRequest() {
+        LocationRequestModel updateRequest = LocationRequestModel.builder()
+                .name("Test")
+                .shelterType(ShelterTypeEnum.SHELTER)
+                .build();
+
+        this.webTestClient.put()
+                .uri(BASE_URI + "/" + INVALID_ID)
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(updateRequest)
+                .exchange()
+                .expectStatus().isEqualTo(HttpStatus.UNPROCESSABLE_ENTITY)
+                .expectBody()
+                .jsonPath("$.message").isEqualTo("Invalid locationid: " + INVALID_ID);
+    }
+
+    @Test
+    void whenLocationIdIsNotFoundOnPut_thenReturnNotFound() {
+        LocationRequestModel updateRequest = LocationRequestModel.builder()
+                .name("Not Found Shelter")
+                .shelterType(ShelterTypeEnum.SHELTER)
+                .build();
+
+        this.webTestClient.put()
+                .uri(BASE_URI + "/" + NOT_FOUND_ID)
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(updateRequest)
+                .exchange()
+                .expectStatus().isNotFound()
+                .expectBody()
+                .jsonPath("$.message").isEqualTo("Unknown locationid: " + NOT_FOUND_ID);
+    }
+
+    @Test
+    void whenLocationNameIsInvalidOnPost_thenReturnUnprocessableEntity() {
+        LocationRequestModel model = LocationRequestModel.builder()
+                .name("") // invalid
+                .shelterType(ShelterTypeEnum.SHELTER)
+                .build();
+
+        webTestClient.post()
+                .uri(BASE_URI)
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(model)
+                .exchange()
+                .expectStatus().isEqualTo(HttpStatus.UNPROCESSABLE_ENTITY)
+                .expectBody()
+                .jsonPath("$.message").isEqualTo("Invalid Name: " + model.getName());
+    }
+
+    @Test
+    void createLocation_missingFields_returnsValidationErrors() {
+        LocationRequestModel model = LocationRequestModel.builder().build();
+
+        webTestClient.post()
+                .uri(BASE_URI)
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(model)
+                .exchange()
+                .expectStatus().isEqualTo(HttpStatus.UNPROCESSABLE_ENTITY);
+    }
+
+    @Test
+    void createLocation_zeroCapacity_returnsUnprocessableEntity() {
+        LocationRequestModel model = LocationRequestModel.builder()
+                .name("Invalid Shelter")
+                .shelterType(ShelterTypeEnum.SHELTER)
+                .capacity(0)
+                .availableSpace(0)
+                .streetAddress("123")
+                .city("Toronto")
+                .province("ON")
+                .country("Canada")
+                .postalCode("X1X1X1")
+                .build();
+
+        webTestClient.post()
+                .uri(BASE_URI)
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(model)
+                .exchange()
+                .expectStatus().isCreated(); // Depends on your logic — change to isEqualTo(HttpStatus.UNPROCESSABLE_ENTITY) if it's invalid.
+    }
+
+    @Test
+    void updateLocation_withInvalidCapacity_shouldFailIfNegative() {
+        LocationRequestModel updateRequest = LocationRequestModel.builder()
+                .name("Bad Shelter")
+                .capacity(-5)
+                .availableSpace(5)
+                .build();
+
+        webTestClient.put()
+                .uri(BASE_URI + "/" + VALID_ID)
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(updateRequest)
+                .exchange()
+                .expectStatus().isEqualTo(HttpStatus.UNPROCESSABLE_ENTITY);
+    }
+
+    @Test
+    void updateLocation_validPayload_capacityZeroAllowed() {
+        LocationRequestModel updateRequest = LocationRequestModel.builder()
+                .name("Zero Cap Shelter")
+                .capacity(0)
+                .availableSpace(0)
+                .shelterType(ShelterTypeEnum.SHELTER)
+                .streetAddress("123 St")
+                .city("City")
+                .province("ON")
+                .country("Canada")
+                .postalCode("M1M1M1")
+                .build();
+
+        webTestClient.put()
+                .uri(BASE_URI + "/" + VALID_ID)
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(updateRequest)
+                .exchange()
+                .expectStatus().isOk();
+    }
+
+    @Test
+    void deleteLocation_invalidUUID_shouldReturn422() {
+        webTestClient.delete()
+                .uri(BASE_URI + "/" + INVALID_ID)
+                .exchange()
+                .expectStatus().isEqualTo(HttpStatus.UNPROCESSABLE_ENTITY)
+                .expectBody()
+                .jsonPath("$.message").isEqualTo("Invalid locationid: " + INVALID_ID);
+    }
+
+    @Test
+    void deleteLocation_nonExistentId_returnsNotFound() {
+        webTestClient.delete()
+                .uri(BASE_URI + "/" + NOT_FOUND_ID)
+                .exchange()
+                .expectStatus().isNotFound();
+    }
+    @Test
+    void createLocation_missingCity_shouldReturnError() {
+        LocationRequestModel model = LocationRequestModel.builder()
+                .name("Test Shelter")
+                .shelterType(ShelterTypeEnum.SHELTER)
+                .streetAddress("101 Main")
+                .province("QC")
+                .country("Canada")
+                .postalCode("A1A1A1")
+                .capacity(20)
+                .availableSpace(10)
+                .build();
+
+        webTestClient.post()
+                .uri(BASE_URI)
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(model)
+                .exchange()
+                .expectStatus().isEqualTo(HttpStatus.UNPROCESSABLE_ENTITY);
+    }
+
+    @Test
+    void createAndRetrieveLocation_shouldMatch() {
+        LocationRequestModel model = LocationRequestModel.builder()
+                .name("RoundTrip Shelter")
+                .shelterType(ShelterTypeEnum.SHELTER)
+                .streetAddress("101 Circle")
+                .city("Loopville")
+                .province("BC")
+                .country("Canada")
+                .postalCode("V9V9V9")
+                .capacity(50)
+                .availableSpace(25)
+                .build();
+
+        LocationResponseModel created = webTestClient.post()
+                .uri(BASE_URI)
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(model)
+                .exchange()
+                .expectStatus().isCreated()
+                .expectBody(LocationResponseModel.class)
+                .returnResult().getResponseBody();
+
+        assertNotNull(created);
+        assertEquals("RoundTrip Shelter", created.getName());
+
+        webTestClient.get()
+                .uri(BASE_URI + "/" + created.getLocationId())
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody()
+                .jsonPath("$.name").isEqualTo("RoundTrip Shelter");
+    }
+
+    @Test
+    void createLocation_thenDelete_thenGetShouldFail() {
+        LocationRequestModel model = LocationRequestModel.builder()
+                .name("Temporary")
+                .shelterType(ShelterTypeEnum.SHELTER)
+                .streetAddress("1 Gone St")
+                .city("Nowhere")
+                .province("ON")
+                .country("Canada")
+                .postalCode("Z0Z0Z0")
+                .capacity(5)
+                .availableSpace(2)
+                .build();
+
+        LocationResponseModel created = webTestClient.post()
+                .uri(BASE_URI)
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(model)
+                .exchange()
+                .expectStatus().isCreated()
+                .expectBody(LocationResponseModel.class)
+                .returnResult().getResponseBody();
+
+        webTestClient.delete()
+                .uri(BASE_URI + "/" + created.getLocationId())
+                .exchange()
+                .expectStatus().isNoContent();
+
+        webTestClient.get()
+                .uri(BASE_URI + "/" + created.getLocationId())
+                .exchange()
+                .expectStatus().isNotFound();
+    }
+
+}

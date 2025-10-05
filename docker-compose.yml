@@ -1,0 +1,208 @@
+services:
+  api-gateway:
+    build: api-gateway
+    hostname: api-gateway
+    container_name: api-gateway
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    depends_on:
+      - dogandlocation-service
+      - adoptionpaper-service
+      - adopter-service
+      - volunteer-service
+
+  # Dog and Location Service
+  dogandlocation-service:
+    build: dogandlocation-service
+    hostname: dogandlocation-service
+    container_name: dogandlocation-service
+    ports:
+      - "8083:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+#      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql-dogandlocation/dogandlocation-db
+    depends_on:
+      mysql-dogandlocation:
+        condition: service_healthy
+
+  # Adopter Service
+  adopter-service:
+    build: adopter-service
+    hostname: adopter-service
+    container_name: adopter-service
+    ports:
+      - "8081:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+#      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql-adopter/adopter-db
+    depends_on:
+      mysql-adopter:
+        condition: service_healthy
+
+  # Volunteer Service
+  volunteer-service:
+    build: volunteer-service
+    hostname: volunteer-service
+    container_name: volunteer-service
+    ports:
+      - "8082:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+#      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres1/volunteer-db
+    depends_on:
+      postgres1:
+        condition: service_healthy
+
+
+  adoptionpaper-service:
+    build: adoptionpaper-service
+    hostname: adoptionpaper-service
+    container_name: adoptionpaper-service
+    ports:
+      - "8084:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE=health
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8080/actuator/health" ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    depends_on:
+      mongodb:
+        condition: service_healthy
+
+
+  mongodb:
+    image: mongo:5.0
+    container_name: mongo
+    ports:
+      - 27017:27017
+    volumes:
+      - mongo:/data
+
+    environment:
+      #      - MONGO_INITDB_DATABASE=adoption
+      - MONGO_INITDB_ROOT_USERNAME=user
+      - MONGO_INITDB_ROOT_PASSWORD=pwd
+      - MONGO_INITDB_DATABASE=adoptionpaper
+    healthcheck:
+      test: [ "CMD", "mongo", "--eval", "db.adminCommand('ping')", "--username", "user", "--password", "pwd", "--authenticationDatabase", "admin" ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+
+  mongo-express:
+    image: mongo-express
+    container_name: mongo_express
+    restart: always
+    ports:
+      - 8086:8081
+    environment:
+      - ME_CONFIG_MONGODB_SERVER=mongo
+      - ME_CONFIG_MONGODB_ADMINUSERNAME=user
+      - ME_CONFIG_MONGODB_ADMINPASSWORD=pwd
+    depends_on:
+      mongodb:
+        condition: service_healthy
+
+  # Dog and Location Database
+  mysql-dogandlocation:
+    image: mysql:5.7
+    ports:
+      - "3307:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=rootpwd
+      - MYSQL_DATABASE=dogandlocation-db
+      - MYSQL_USER=user
+      - MYSQL_PASSWORD=pwd
+    volumes:
+      - ./data/mysql-dogandlocation:/var/lib/mysql
+      - ./data/init.d:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-uuser", "-ppwd", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  # Adopter Database
+  mysql-adopter:
+    image: mysql:5.7
+    ports:
+      - "3308:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=rootpwd
+      - MYSQL_DATABASE=adopter-db
+      - MYSQL_USER=user
+      - MYSQL_PASSWORD=pwd
+    volumes:
+      - ./data/mysql-adopter:/var/lib/mysql
+      - ./data/init.d:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-uuser", "-ppwd", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+#   Volunteer Database
+  postgres1:
+    image: postgres:latest
+#    hostname: postgres1
+    container_name: postgres1
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_USER=volunteer-db
+      - PGUSER=volunteer-db
+      - POSTGRES_PASSWORD=pwd
+      - POSTGRES_DB=volunteer-db
+    healthcheck:
+      test: "pg_isready -h postgres1"
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # PHPMyAdmin instances for each database
+  phpmyadmin-dogandlocation:
+    image: phpmyadmin:5.2.0
+    container_name: PhpMyAdmin-dogandlocation
+    links:
+      - mysql-dogandlocation:db
+    restart: always
+    ports:
+      - 5013:80
+    environment:
+      - PMA_HOST=mysql-dogandlocation
+      - PMA_PORT=3306
+
+  phpmyadmin-adopter:
+    image: phpmyadmin:5.2.0
+    container_name: PhpMyAdmin-adopter
+    links:
+      - mysql-adopter:db
+    restart: always
+    ports:
+      - 5014:80
+    environment:
+      - PMA_HOST=mysql-adopter
+      - PMA_PORT=3306
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: pgadmin-volunteer
+    restart: always
+    ports:
+      - 9000:80
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=admin@jeremy.com
+      - PGADMIN_DEFAULT_PASSWORD=pwd
+      
+    depends_on:
+      - postgres1
+
+
+volumes:
+  mongo:
