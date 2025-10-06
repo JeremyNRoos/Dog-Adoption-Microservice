@@ -2,7 +2,7 @@
 
 A microservices-based dog adoption platform built with Spring Boot, featuring four decoupled services communicating via REST APIs through an API Gateway.
 
-## 🚀 Features
+## Features
 
 - **Adoption Service**: Manages adoption applications and documentation
 - **Adopter Service**: Handles adopter profiles and information
@@ -10,7 +10,7 @@ A microservices-based dog adoption platform built with Spring Boot, featuring fo
 - **Volunteer Service**: Handles volunteer management and scheduling
 - **API Gateway**: Single entry point for all client requests
 
-## 🛠️ Technologies
+## Technologies
 
 - **Backend**: Java 17, Spring Boot 3.x
 - **API**: RESTful services with HATEOAS
@@ -23,7 +23,7 @@ A microservices-based dog adoption platform built with Spring Boot, featuring fo
 - **Testing**: JUnit 5, MockMVC, 90%+ test coverage with JaCoCo
 - **API Documentation**: SpringDoc OpenAPI (Swagger)
 
-## 📦 Project Structure
+## Project Structure
 
 ```
 dogadoptionmicroservice/
@@ -34,7 +34,7 @@ dogadoptionmicroservice/
 └── volunteer-service/       # Handles volunteer management
 ```
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites
 
@@ -81,19 +81,19 @@ dogadoptionmicroservice/
    ```
    Example: `./gradlew :adoptionpaper-service:bootRun`
 
-## 📚 Documentation
+## Documentation
 
 - **API Documentation**: Available via Swagger UI at `http://localhost:8080/swagger-ui.html` when services are running
 - **OpenAPI Specification**: Available at `http://localhost:8080/v3/api-docs`
 - **Architecture**: See `Diagrams/` for C4 model and DDD diagrams showing the system context and container architecture
 
-## 🧪 Testing
+## Testing
 
 Run tests for all services:
 ```bash
 ./gradlew clean build test
 ```
 
-## 📝 License
+## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
