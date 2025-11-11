@@ -51,15 +51,15 @@ spring:
       on-profile: docker
 
 
-  datasource:
-    url: jdbc:mysql://mysql-adopter/adopter-db
-    username: user
-    password: pwd
+#  datasource:
+#    url: jdbc:mysql://mysql-adopter/adopter-db
+#    username: user
+#    password: pwd
 
   jpa:
     show-sql: true
     hibernate:
-      ddl-auto: create   #use create to allow jpa to auto-generate from Entity classes; use none to use schema-h2.sql
+      ddl-auto: none   #use create to allow jpa to auto-generate from Entity classes; use none to use schema-h2.sql
 
     defer-datasource-initialization: true
 
@@ -70,6 +70,8 @@ spring:
       schema-locations: classpath:schema.sql
       data-locations: classpath:data.sql
 
-server.port: 8080
+server:
+  port: 8080
+  address: 0.0.0.0
 
 spring.datasource.hikari.initializationFailTimeout: 60000

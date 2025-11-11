@@ -95,19 +95,19 @@ services:
       retries: 10
 
 
-  mongo-express:
-    image: mongo-express
-    container_name: mongo_express
-    restart: always
-    ports:
-      - 8086:8081
-    environment:
-      - ME_CONFIG_MONGODB_SERVER=mongo
-      - ME_CONFIG_MONGODB_ADMINUSERNAME=user
-      - ME_CONFIG_MONGODB_ADMINPASSWORD=pwd
-    depends_on:
-      mongodb:
-        condition: service_healthy
+#  mongo-express:
+#    image: mongo-express
+#    container_name: mongo_express
+#    restart: always
+#    ports:
+#      - 8086:8081
+#    environment:
+#      - ME_CONFIG_MONGODB_SERVER=mongo
+#      - ME_CONFIG_MONGODB_ADMINUSERNAME=user
+#      - ME_CONFIG_MONGODB_ADMINPASSWORD=pwd
+#    depends_on:
+#      mongodb:
+#        condition: service_healthy
 
   # Dog and Location Database
   mysql-dogandlocation:
@@ -166,42 +166,42 @@ services:
       retries: 5
 
   # PHPMyAdmin instances for each database
-  phpmyadmin-dogandlocation:
-    image: phpmyadmin:5.2.0
-    container_name: PhpMyAdmin-dogandlocation
-    links:
-      - mysql-dogandlocation:db
-    restart: always
-    ports:
-      - 5013:80
-    environment:
-      - PMA_HOST=mysql-dogandlocation
-      - PMA_PORT=3306
-
-  phpmyadmin-adopter:
-    image: phpmyadmin:5.2.0
-    container_name: PhpMyAdmin-adopter
-    links:
-      - mysql-adopter:db
-    restart: always
-    ports:
-      - 5014:80
-    environment:
-      - PMA_HOST=mysql-adopter
-      - PMA_PORT=3306
-
-  pgadmin:
-    image: dpage/pgadmin4:latest
-    container_name: pgadmin-volunteer
-    restart: always
-    ports:
-      - 9000:80
-    environment:
-      - PGADMIN_DEFAULT_EMAIL=admin@jeremy.com
-      - PGADMIN_DEFAULT_PASSWORD=pwd
-      
-    depends_on:
-      - postgres1
+#  phpmyadmin-dogandlocation:
+#    image: phpmyadmin:5.2.0
+#    container_name: PhpMyAdmin-dogandlocation
+#    links:
+#      - mysql-dogandlocation:db
+#    restart: always
+#    ports:
+#      - 5013:80
+#    environment:
+#      - PMA_HOST=mysql-dogandlocation
+#      - PMA_PORT=3306
+#
+#  phpmyadmin-adopter:
+#    image: phpmyadmin:5.2.0
+#    container_name: PhpMyAdmin-adopter
+#    links:
+#      - mysql-adopter:db
+#    restart: always
+#    ports:
+#      - 5014:80
+#    environment:
+#      - PMA_HOST=mysql-adopter
+#      - PMA_PORT=3306
+#
+#  pgadmin:
+#    image: dpage/pgadmin4:latest
+#    container_name: pgadmin-volunteer
+#    restart: always
+#    ports:
+#      - 9000:80
+#    environment:
+#      - PGADMIN_DEFAULT_EMAIL=admin@jeremy.com
+#      - PGADMIN_DEFAULT_PASSWORD=pwd
+#
+#    depends_on:
+#      - postgres1
 
 
 volumes:
