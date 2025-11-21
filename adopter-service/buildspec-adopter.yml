@@ -10,10 +10,10 @@ phases:
       - REPOSITORY_URI=304708116812.dkr.ecr.us-east-1.amazonaws.com/adopter-ecr
       - echo setting image tag...
       - IMAGE_TAG=build-$(echo $CODEBUILD_BUILD_ID | awk -F":" '{print $2}')
-      - cd adopter-service
   build:
     commands:
       - echo building and tagging started image on `date`
+      - cd adopter-service
       - echo running gradle build...
       - ./gradlew build
       - echo building Docker image...
