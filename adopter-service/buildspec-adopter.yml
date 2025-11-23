@@ -34,3 +34,4 @@ phases:
 artifacts:
   files:
     - adopter-service/imagedefinitions.json
+  discard-paths: no
