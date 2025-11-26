@@ -24,7 +24,7 @@ spec:
             - name: SPRING_PROFILES_ACTIVE
               value: "docker"
             - name: SPRING_DATASOURCE_URL
-              value: "jdbc:mysql://$(DB_HOST):3306/$(DB_NAME)"
+              value: "jdbc:mysql://mysql1.ck9wy8gm8l7j.us-east-1.rds.amazonaws.com:3306/adopter_db"
             - name: SPRING_DATASOURCE_USERNAME
               valueFrom:
                 secretKeyRef:
@@ -35,13 +35,6 @@ spec:
                 secretKeyRef:
                   name: mysql-credentials
                   key: password
-            - name: DB_HOST
-              value: "jdbc:mysql://mysql1.ck9wy8gm8l7j.us-east-1.rds.amazonaws.com:3306/adopter_db" # Will be replaced after terraform apply
-            - name: DB_NAME
-              valueFrom:
-                secretKeyRef:
-                  name: mysql-credentials
-                  key: database
           resources:
             requests:
               memory: 512Mi
