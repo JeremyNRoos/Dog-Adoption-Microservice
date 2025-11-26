@@ -1,28 +1,38 @@
+# deployment.yaml
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: myapp
+  name: adopter-service
   namespace: microservices
 spec:
   selector:
     matchLabels:
-      app: myapp
+      app: adopter-service
   template:
     metadata:
       labels:
-        app: myapp
+        app: adopter-service
     spec:
       containers:
-        - name: myapp
-          image: aputra/myapp-195:v2
+        - name: adopter-service
+          image: 304708116812.dkr.ecr.us-east-1.amazonaws.com/adopter-ecr:latest
           ports:
             - name: http
               containerPort: 8080
+          # env:
+          #   - name: SPRING_PROFILES_ACTIVE
+          #     value: "docker"
+          #   - name: SPRING_DATASOURCE_URL
+          #     value: "jdbc:mysql://mysql1.ck9wy8gm8l7j.us-east-1.rds.amazonaws.com:3306/adopter-db"
+          #   - name: SPRING_DATASOURCE_USERNAME
+          #     value: "admin"
+          #   - name: SPRING_DATASOURCE_PASSWORD
+          #     value: "12345678"
           resources:
             requests:
-              memory: 256Mi
-              cpu: 100m
+              memory: 512Mi
+              cpu: 500m
             limits:
-              memory: 256Mi
-              cpu: 100m
+              memory: 512Mi
+              cpu: 1000m
