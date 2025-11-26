@@ -1,0 +1,44 @@
+package com.roos.adoptioncenter.volunteer_service.mappinglayer;
+
+import com.roos.adoptioncenter.volunteer_service.dataaccesslayer.Volunteer;
+import com.roos.adoptioncenter.volunteer_service.presentation.VolunteerController;
+import com.roos.adoptioncenter.volunteer_service.presentation.VolunteerResponseModel;
+import org.mapstruct.*;
+import org.springframework.hateoas.Link;
+
+import java.util.List;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+
+@Mapper(componentModel = "spring")
+public interface VolunteerResponseMapper {
+
+    @Mappings({
+            @Mapping(source = "volunteerIdentifier.volunteerId", target = "volunteerId"),
+            @Mapping(source = "fName", target = "fName"),
+            @Mapping(source = "lName", target = "lName"),
+            @Mapping(source = "email", target = "email"),
+            @Mapping(source = "salary", target = "salary"),
+            @Mapping(source = "title", target = "title"),
+            @Mapping(source = "volunteerPhoneNumber", target = "volunteerPhoneNumber"),
+            @Mapping(source = "volunteerAddress", target = "volunteerAddress")
+    })
+    VolunteerResponseModel toResponseModel(Volunteer volunteer);
+
+    List<VolunteerResponseModel> entityListToResponseModelList(List<Volunteer> volunteers);
+
+    @AfterMapping
+    default void addLinks(@MappingTarget VolunteerResponseModel volunteerResponseModel, Volunteer volunteer) {
+        Link selflink = linkTo(methodOn(VolunteerController.class)
+                .getVolunteerById(volunteerResponseModel.getVolunteerId()))
+                .withSelfRel();
+        volunteerResponseModel.add(selflink);
+
+        Link allVolunteerLink = linkTo(methodOn(VolunteerController.class)
+                .getVolunteers())
+                .withRel("allVolunteers");
+        volunteerResponseModel.add(allVolunteerLink);
+    }
+
+}

@@ -1,0 +1,41 @@
+services:
+  volunteer-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    hostname: volunteerservice
+    ports:
+      - "8082:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    depends_on:
+      postgres1:
+        condition: service_healthy
+
+  postgres1:
+    image: postgres:latest
+    container_name: postgres1
+    hostname: postgres1
+    environment:
+      - POSTGRES_USER=volunteer-db
+      - PGUSER=volunteer-db
+      - POSTGRES_PASSWORD=pwd
+    ports:
+      - 5432:5432
+    healthcheck:
+      test: "pg_isready -h postgres1"
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: pgadmin-volunteer
+    restart: always
+    ports:
+      - 9000:80
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=8Y2o6@example.com
+      - PGADMIN_DEFAULT_PASSWORD=admin
+    depends_on:
+      - postgres1

@@ -1,0 +1,29 @@
+package com.roos.adoptioncenter.adoptionpaper_service.dataaccesslayer;
+
+
+import com.roos.adoptioncenter.adoptionpaper_service.domainclientlayer.adopter.AdopterModel;
+import com.roos.adoptioncenter.adoptionpaper_service.domainclientlayer.dog.DogModel;
+import com.roos.adoptioncenter.adoptionpaper_service.domainclientlayer.dog.LocationModel;
+import com.roos.adoptioncenter.adoptionpaper_service.domainclientlayer.volunteer.VolunteerModel;
+import lombok.Builder;
+import lombok.Data;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+@Document(collection = "adoptions")
+@Data
+@Builder
+public class AdoptionPaper {
+    @Id
+    private String id;
+
+    private AdoptionPaperIdentifier adoptionPaperIdentifier;
+
+    private DogModel dogModel;
+
+
+    private AdopterModel adopterModel;
+
+    private LocationModel locationModel;
+
+    private VolunteerModel volunteerModel;
+}

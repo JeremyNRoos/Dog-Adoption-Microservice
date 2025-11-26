@@ -1,0 +1,16 @@
+package com.roos.adoptioncenter.dogandlocation_service.dogandlocationsubdomain.businesslayer.Location;
+
+import com.roos.adoptioncenter.dogandlocation_service.dogandlocationsubdomain.presentationlayer.Location.LocationRequestModel;
+import com.roos.adoptioncenter.dogandlocation_service.dogandlocationsubdomain.presentationlayer.Location.LocationResponseModel;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+@Service
+public interface LocationService {
+    List<LocationResponseModel> getLocations();
+    LocationResponseModel getLocationById(String locationId);
+    LocationResponseModel addLocation(LocationRequestModel location);
+    LocationResponseModel updateLocation(LocationRequestModel location, String locationId);
+    void deleteLocation(String locationId);
+}

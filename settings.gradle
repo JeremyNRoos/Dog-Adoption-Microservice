@@ -1,0 +1,6 @@
+rootProject.name = "dogadoptionmicroservice"
+include "adopter-service"
+include "dogandlocation-service"
+include "volunteer-service"
+include "adoptionpaper-service"
+include "api-gateway"

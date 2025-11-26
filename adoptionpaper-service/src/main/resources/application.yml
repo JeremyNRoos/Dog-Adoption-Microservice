@@ -1,0 +1,100 @@
+# application.yaml
+
+# ======================
+# DEFAULT PROFILE
+# ======================
+spring:
+  profiles:
+    active: default
+
+app:
+  adopter-service:
+    host: localhost
+    port: 7001
+  volunteer-service:
+    host: localhost
+    port: 7002
+  dogandlocation-service:
+    host: localhost
+    port: 7003
+
+server:
+  error:
+    include-message: always
+
+logging:
+  level:
+    root: INFO
+    com.roos: DEBUG
+    org.springframework.boot.test: DEBUG
+    de.flapdoodle.embed.mongo: DEBUG
+    org.springframework.data.mongodb.core.MongoTemplate: DEBUG
+
+---
+
+# ======================
+# DOCKER PROFILE
+# ======================
+spring:
+  config:
+    activate:
+      on-profile: docker
+  data:
+    mongodb:
+      #      uri: mongodb://user:pwd@mongodb:27017/adoptionCase
+      host: mongo
+      port: 27017
+      username: user
+      password: pwd
+      authentication-database: admin
+      database: adoptionpaper
+
+logging:
+  level:
+    org.springframework.data.mongodb.core.MongoTemplate: DEBUG
+    org.mongodb.driver: DEBUG
+
+
+server:
+  port: 8080
+
+app:
+  adopter-service:
+    host: adopter-service
+    port: 8080
+  volunteer-service:
+    host: volunteer-service
+    port: 8080
+  dogandlocation-service:
+    host: dogandlocation-service
+    port: 8080
+
+---
+
+# ======================
+# TEST PROFILE
+# ======================
+spring:
+  config:
+    activate:
+      on-profile: test
+  data:
+    mongodb:
+#      host: localhost
+      port: 0 # random port for embedded MongoDB
+      database: AdoptionPaperDb
+#      username: user
+#      password: pwd
+      auto-index-creation: true
+
+logging:
+  level:
+    root: INFO # or DEBUG if needed
+    com.roos: DEBUG # Set to DEBUG or TRACE
+
+
+de:
+  flapdoodle:
+    mongodb:
+      embedded:
+        version: 6.0.5

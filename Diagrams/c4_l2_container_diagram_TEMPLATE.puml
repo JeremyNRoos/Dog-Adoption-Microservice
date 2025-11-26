@@ -1,0 +1,54 @@
+@startuml
+!includeurl https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/master/C4_Container.puml
+
+!define DEVICONS https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/master/devicons
+!define FONTAWESOME https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/master/font-awesome-5
+
+!include FONTAWESOME/users.puml
+
+AddElementTag("microService", $shape=EightSidedShape(), $bgColor="CornflowerBlue", $fontColor="white", $legendText="micro service\neight sided")
+AddElementTag("storage", $shape=RoundedBoxShape(), $bgColor="lightSkyBlue", $fontColor="white")
+AddRelTag(aggregate_root, $lineColor="red")
+
+LAYOUT_TOP_DOWN()
+'LAYOUT_WITH_LEGEND()
+SHOW_PERSON_OUTLINE()
+'HIDE_STEREOTYPE()
+
+title Container Diagram for Adoption Center
+
+Person(volunteer, "Volunteer", "Volunteer of the dog adoption center")
+System_Boundary(cardealership, "Dog adoption Center System"){
+    Container(webapp, "Web Application", "JavaScript, React", "Delivers the static content and the dog adoption center sigle page application to the volunteer's browser.")
+    Container(singlepageapp, "Single-Page Application", "JavaScript, React", "Provides the dog adoption center functionality to the volunteers via their browser.")
+    Container(api_gateway, "API Gateway", "Java, Spring Boot", "Provides dog adoption center functionality via JSON/REST HTTPS API.")
+    Container(dogandlocation_service, "DogandLocation-Service", "Java, Spring Boot", "Provides dog and location functionality via JSON/REST HTTPS API.", $tags = "microService")
+    Container(adopter_service, "Adopter-Service", "Java, Spring Boot", "Provides adopter functionality via JSON/REST HTTPS API.", $tags = "microService")
+    Container(volunteer_service, "Volunteer-Service", "Java, Spring Boot", "Provides volunteer functionality via JSON/REST HTTPS API.", $tags = "microService")
+    Container(adoptionpaper_service, "AdoptionPaper-Service", "Java, Spring Boot", "Provides adoption paper functionality via JSON/REST HTTPS API.", $tags = "microService")
+    Container(volunteer_db, "Volunteer Database", "PostgreSQL", $tags = "storage")
+    Container(adopter_db, "Adopter Database", "MySQL 5.5.x", $tags = "storage")
+    Container(dogandlocation_db, "Dog and Location Database", "MySQL 5.5.x", $tags = "storage")
+    Container(adoptionpaper_db, "AdoptionPaper Database", "MySQL 5.5.x", $tags = "storage")
+
+
+    Rel(volunteer, webapp, "Visits dogadoptioncenter.com using", "HTTPS")
+    Rel_R(webapp, singlepageapp, "Delivers to the volunteer's browser", "HTTPS")
+    Rel(volunteer, singlepageapp, "Views dogs and tracks adoptions", "HTTPS")
+    Rel(singlepageapp, api_gateway, "Makes API calls to", "JSON/REST/HTTPS")
+    Rel(api_gateway, adopter_service, "Makes API calls to", "JSON/REST/HTTPS")
+    Rel(api_gateway, dogandlocation_service, "Makes API calls to", "JSON/REST/HTTPS")
+    Rel(api_gateway, volunteer_service, "Makes API calls to", "JSON/REST/HTTPS")
+    Rel(api_gateway, adoptionpaper_service, "Makes API calls to", "JSON/REST/HTTPS")
+
+    Rel_D(adopter_service, adopter_db, "Reads from and writes to", "JDBC/MySQL")
+    Rel_D(dogandlocation_service, dogandlocation_db, "Reads from and writes to", "JDBC/MySQL")
+    Rel_D(volunteer_service, volunteer_db, "Reads from and writes to", "JDBC/MySQL")
+    Rel_R(adoptionpaper_service, adoptionpaper_db, "Reads from and writes to", "JDBC/MySQL")
+
+    Rel(adoptionpaper_service, volunteer_service, "Makes API calls to", "JSON/REST/HTTPS", $tags = "aggregate_root")
+    Rel(adoptionpaper_service, adopter_service, "Makes API calls to", "JSON/REST/HTTPS", $tags = "aggregate_root")
+    Rel(adoptionpaper_service, dogandlocation_service, "Makes API calls to", "JSON/REST/HTTPS", $tags = "aggregate_root")
+}
+
+@enduml

@@ -1,0 +1,24 @@
+INSERT INTO location (location_id, name, shelter_type, address, city, province, country, postal_code, capacity,
+                      available_space)
+VALUES ('3e6c62a3-b1e7-4eb7-9642-8cdcb3ac74e6', 'Happy Tails Shelter', 'SHELTER', '123 Bark St', 'New York', 'New York', 'USA', '10001', 50, 10),
+       ('9e7b4e90-21f0-42b6-94ce-62290dd444f4', 'Paws Haven', 'FOSTERHOME', '456 Woof Ave', 'Los Angeles', 'California', 'USA', '90012', 40, 5),
+       ('73a41d3c-c22b-4fa9-bc79-5be64d06e315', 'Furry Friends Home', 'SHELTER', '789 Tail Rd', 'Chicago', 'Illinois', 'USA', '60605', 60, 12),
+       ('4f2b77b1-70c8-4209-a4a7-b8c7b3eb6cb2', 'Safe Paws Rescue', 'MEDICALUNIT', '101 Fetch Blvd', 'Houston', 'Texas', 'USA', '77002', 45, 8),
+       ('17999e90-bf87-4bc2-8d56-3e69d3b45715', 'Loving Paws Sanctuary', 'MEDICALUNIT', '202 Sniff St', 'Miami', 'Florida', 'USA', '33101', 55, 15),
+       ('b5cb3e2d-57c5-44cf-8691-295574d23080', 'Golden Retriever Haven', 'MEDICALUNIT', '303 Wag Way', 'Denver', 'Colorado', 'USA', '80203', 35, 7),
+       ('3ec65e2c-74d9-4b14-87ce-58e2b168c0c8', 'Puppy Love Shelter', 'MEDICALUNIT', '404 Playful Ct', 'Seattle', 'Washington', 'USA', '98104', 70,20),
+       ('1d0d76ff-e4b2-4d9a-a6fc-e2b462e59b7f', 'Home for Hounds', 'MEDICALUNIT', '505 Loyal Ln', 'Boston', 'Massachusetts', 'USA', '02108', 30, 5),
+       ('897fb4bc-9a99-4f8f-a149-fc359f10fd27', 'Rescue Haven', 'MEDICALUNIT', '606 Kindness Dr', 'San Francisco', 'California', 'USA', '94103', 50, 9),
+       ('4ed9e4ef-5a34-4e7a-a685-82efac763a38', 'Adopt A Friend', 'MEDICALUNIT', '707 Forever Home St', 'Atlanta', 'Georgia', 'USA', '30303', 65, 18);
+
+INSERT INTO dog (dog_id, name, breed, age, location_id, kennel_size, vaccination_status, availability_status)
+VALUES ('DOG-001', 'Buddy', 'GERMAN_SHEPHERD', 3, '3e6c62a3-b1e7-4eb7-9642-8cdcb3ac74e6', 'LARGE', 'VACCINATED', 'AVAILABLE'),
+       ('DOG-002', 'Bella', 'GERMAN_SHEPHERD', 4, '9e7b4e90-21f0-42b6-94ce-62290dd444f4', 'LARGE', 'VACCINATED', 'AVAILABLE'),
+       ('DOG-003', 'Charlie', 'GERMAN_SHEPHERD', 2, '73a41d3c-c22b-4fa9-bc79-5be64d06e315', 'LARGE', 'VACCINATED', 'ADOPTED'),
+       ('DOG-004', 'Lucy', 'GERMAN_SHEPHERD', 5, '4f2b77b1-70c8-4209-a4a7-b8c7b3eb6cb2', 'MEDIUM', 'VACCINATED', 'AVAILABLE'),
+       ('DOG-005', 'Max', 'GERMAN_SHEPHERD', 6, '17999e90-bf87-4bc2-8d56-3e69d3b45715', 'LARGE', 'NOT_VACCINATED', 'AVAILABLE'),
+       ('DOG-006', 'Daisy', 'GERMAN_SHEPHERD', 3, 'b5cb3e2d-57c5-44cf-8691-295574d23080', 'MEDIUM', 'VACCINATED', 'AVAILABLE'),
+       ('DOG-007', 'Rocky', 'GERMAN_SHEPHERD', 4, '3ec65e2c-74d9-4b14-87ce-58e2b168c0c8', 'LARGE', 'VACCINATED', 'ADOPTED'),
+       ('DOG-008', 'Milo', 'GERMAN_SHEPHERD', 2, '1d0d76ff-e4b2-4d9a-a6fc-e2b462e59b7f', 'LARGE', 'VACCINATED', 'AVAILABLE'),
+       ('DOG-009', 'Sadie', 'GERMAN_SHEPHERD', 5, '897fb4bc-9a99-4f8f-a149-fc359f10fd27', 'SMALL', 'NOT_VACCINATED', 'AVAILABLE'),
+       ('DOG-010', 'Duke', 'GERMAN_SHEPHERD', 3, '4ed9e4ef-5a34-4e7a-a685-82efac763a38', 'LARGE', 'VACCINATED', 'AVAILABLE');

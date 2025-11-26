@@ -1,0 +1,51 @@
+package com.roos.adoptioncenter.volunteer_service.dataaccesslayer;
+
+import jakarta.persistence.*;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.antlr.v4.runtime.misc.NotNull;
+
+@Entity
+@Data
+@NoArgsConstructor
+@Table(name = "volunteer")
+public class Volunteer {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
+
+    @Embedded
+    private VolunteerIdentifier volunteerIdentifier;
+
+    @Column(name = "f_name")
+    public String fName;
+
+    @Column(name = "l_name")
+    public String lName;
+
+    @Column(name = "email")
+    public String email;
+
+    @Column(name = "salary")
+    public Double salary;
+
+    @Column(name = "position_title")
+    @Enumerated(EnumType.STRING)
+    public TitleEnum2 title;
+
+    @Embedded
+    public VolunteerPhoneNumber volunteerPhoneNumber;
+
+    @Embedded
+    public VolunteerAddress volunteerAddress;
+
+    public Volunteer(@NotNull String fName, @NotNull String lName, @NotNull String email, @NotNull double salary, @NotNull TitleEnum2 titleEnum2, @NotNull VolunteerPhoneNumber volunteerPhoneNumber, @NotNull VolunteerAddress volunteerAddress) {
+        this.fName = fName;
+        this.lName = lName;
+        this.email = email;
+        this.salary = salary;
+        this.title = titleEnum2;
+        this.volunteerPhoneNumber = volunteerPhoneNumber;
+        this.volunteerAddress = volunteerAddress;
+    }
+}

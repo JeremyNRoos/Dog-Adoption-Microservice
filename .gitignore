@@ -20,3 +20,55 @@ Thumbs.db
 # Local env files
 .env
 .env.local
+
+# Java/Gradle
+HELP.md
+.gradle
+build/
+!gradle/wrapper/gradle-wrapper.jar
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+# Database files
+**/data/mysql-*/
+**/*.sock
+**/*.sock.lock
+**/*.pid
+**/*.pid.lock
+**/ibdata*
+**/ib_logfile*
+**/mysql/
+**/performance_schema/
+**/auto.cnf
+**/ib_buffer_pool
+**/hs_err_pid*
+**/adopter@002ddb/
+**/dogandlocation@002ddb/
+**/volunteer@002ddb/
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+bin/
+!**/src/main/**/bin/
+!**/src/test/**/bin/
+
+### IntelliJ IDEA ###
+*.iws
+*.iml
+*.ipr
+out/
+!**/src/main/**/out/
+!**/src/test/**/out/
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/

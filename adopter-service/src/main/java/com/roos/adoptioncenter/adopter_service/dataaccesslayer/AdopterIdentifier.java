@@ -1,0 +1,21 @@
+package com.roos.adoptioncenter.adopter_service.dataaccesslayer;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
+import lombok.Getter;
+
+import java.util.UUID;
+
+@Getter
+@Embeddable
+public class AdopterIdentifier {
+    @Column(name = "adopter_id")
+    private String adopterId;
+    public AdopterIdentifier() {
+        this.adopterId = UUID.randomUUID().toString();
+    }
+
+    public AdopterIdentifier(String adopterId) {
+        this.adopterId = adopterId;
+    }
+}

@@ -1,0 +1,48 @@
+package com.roos.adoptioncenter.dogandlocation_service.dogandlocationsubdomain.dataaccesslayer.Dog;
+
+import com.roos.adoptioncenter.dogandlocation_service.dogandlocationsubdomain.dataaccesslayer.Location.LocationIdentifier;
+import jakarta.persistence.*;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.antlr.v4.runtime.misc.NotNull;
+
+@Entity
+@Data
+@NoArgsConstructor
+@Table(name = "dog")
+public class Dog {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
+
+    @Embedded
+    private DogIdentifier dogIdentifier;
+
+    @Embedded
+    private LocationIdentifier locationIdentifier;
+
+    public String name;
+
+    @Enumerated(EnumType.STRING)
+    public DogBreedEnum breed;
+
+    public Integer age;
+
+    public Kennel dogKennel;
+
+    @Column(name = "vaccination_status")
+    @Enumerated(EnumType.STRING)
+    public VaccinationStatusEnum vaccinationStatus;
+
+    @Column(name = "availability_status")
+    @Enumerated(EnumType.STRING)
+    public AvailabilityStatusEnum availabilityStatus;
+
+    public Dog(@NotNull String name,@NotNull DogBreedEnum breed,@NotNull Integer age, @NotNull Kennel dogKennel,@NotNull VaccinationStatusEnum vaccinationStatus, @NotNull AvailabilityStatusEnum availabilityStatus) {
+        this.name = name;
+        this.breed = breed;
+        this.age = age;
+        this.dogKennel = dogKennel;
+        this.vaccinationStatus = vaccinationStatus;
+        this.availabilityStatus = availabilityStatus;
+    }}
