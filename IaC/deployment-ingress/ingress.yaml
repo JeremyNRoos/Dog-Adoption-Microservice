@@ -11,7 +11,7 @@ metadata:
 spec:
   ingressClassName: alb
   rules:
-    - host: ex6.dogadoptioncenter.com
+    - host: ding.dogadoptioncenter.com
       http:
         paths:
           - path: /
